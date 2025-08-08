@@ -332,19 +332,13 @@ class WingDealsHTMLGenerator:
     </div>
 
     <script>
-        // Load deals data
-        fetch('wing_deals.json')
-            .then(response => response.json())
-            .then(deals => {
-                displayDeals(deals);
-                updateStats(deals);
-                document.getElementById('last-updated').textContent = new Date().toLocaleString();
-            })
-            .catch(error => {
-                console.error('Error loading deals:', error);
-                document.getElementById('deals-container').innerHTML = 
-                    '<div class="no-deals"><h3>Error Loading Deals</h3><p>Unable to load wing deals at this time.</p></div>';
-            });
+        // Load deals data from embedded JSON
+        const dealsData = {{DEALS_DATA}};
+        
+        // Display deals immediately
+        displayDeals(dealsData);
+        updateStats(dealsData);
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
 
         function displayDeals(deals, filter = 'all') {
             const container = document.getElementById('deals-container');
@@ -433,10 +427,8 @@ class WingDealsHTMLGenerator:
                     // Get the filter value
                     const filter = this.getAttribute('data-filter');
                     
-                    // Reload deals with filter
-                    fetch('wing_deals.json')
-                        .then(response => response.json())
-                        .then(deals => displayDeals(deals, filter));
+                    // Apply filter to embedded data
+                    displayDeals(dealsData, filter);
                 });
             });
         });
@@ -446,10 +438,15 @@ class WingDealsHTMLGenerator:
         """
     
     def generate_html(self, deals: List[Dict[str, Any]], output_file: str = 'wing_deals.html'):
-        """Generate HTML file with wing deals"""
+        """
+        Generate HTML file with embedded deals data
+        This embeds the JSON data directly into the HTML so it works when opened locally
+        """
+        # Convert deals to JSON string for embedding
+        deals_json = json.dumps(deals, indent=2)
         
-        # Create the HTML content
-        html_content = self.html_template
+        # Replace placeholder with actual data
+        html_content = self.html_template.replace('{{DEALS_DATA}}', deals_json)
         
         # Write to file
         with open(output_file, 'w', encoding='utf-8') as f:

@@ -678,40 +678,66 @@ MOCK_DEALS = [
 ]
 
 def get_restaurants_by_category(category: str = None) -> List[Dict[str, Any]]:
-    """Get restaurants filtered by category"""
+    """
+    Get restaurants filtered by category (major_chains, local_chains, etc.)
+    If no category is specified, returns all restaurants
+    """
     if category:
+        # Return only restaurants that match the specified category
         return [r for r in RESTAURANTS if r['category'] == category]
+    # Return all restaurants if no category specified
     return RESTAURANTS
 
 def get_restaurant_names() -> List[str]:
-    """Get list of all restaurant names"""
+    """
+    Get a simple list of all restaurant names
+    Useful for displaying restaurant lists or checking if a restaurant exists
+    """
     return [r['name'] for r in RESTAURANTS]
 
 def get_restaurant_by_name(name: str) -> Dict[str, Any]:
-    """Get restaurant data by name"""
+    """
+    Find a specific restaurant by name (case-insensitive)
+    Returns the full restaurant data or None if not found
+    """
     for restaurant in RESTAURANTS:
         if restaurant['name'].lower() == name.lower():
             return restaurant
     return None
 
 def get_deal_sites() -> List[Dict[str, Any]]:
-    """Get all deal aggregation sites"""
+    """
+    Get all deal aggregation websites we want to scrape
+    These are sites like Groupon, LivingSocial, etc.
+    """
     return DEAL_SITES
 
 def get_deal_patterns() -> List[str]:
-    """Get all deal search patterns"""
+    """
+    Get all regex patterns we use to find deals in website text
+    These patterns help us identify wing deals even when they're written differently
+    """
     return DEAL_PATTERNS
 
 def get_mock_deals() -> List[Dict[str, Any]]:
-    """Get all mock deals for demonstration"""
+    """
+    Get all the backup deals we use when web scraping fails
+    These are realistic deals that restaurants commonly offer
+    """
     return MOCK_DEALS
 
 def add_restaurant(restaurant_data: Dict[str, Any]) -> None:
-    """Add a new restaurant to the data"""
+    """
+    Add a new restaurant to the database
+    restaurant_data should contain: name, url, category, locations, known_deals, confidence
+    """
     RESTAURANTS.append(restaurant_data)
 
 def remove_restaurant(name: str) -> bool:
-    """Remove a restaurant by name"""
+    """
+    Remove a restaurant from the database by name (case-insensitive)
+    Returns True if restaurant was found and removed, False if not found
+    """
     for i, restaurant in enumerate(RESTAURANTS):
         if restaurant['name'].lower() == name.lower():
             del RESTAURANTS[i]
@@ -719,7 +745,11 @@ def remove_restaurant(name: str) -> bool:
     return False
 
 def update_restaurant(name: str, updated_data: Dict[str, Any]) -> bool:
-    """Update restaurant data by name"""
+    """
+    Update an existing restaurant's information by name (case-insensitive)
+    updated_data should contain the fields to update (url, category, locations, etc.)
+    Returns True if restaurant was found and updated, False if not found
+    """
     for i, restaurant in enumerate(RESTAURANTS):
         if restaurant['name'].lower() == name.lower():
             RESTAURANTS[i].update(updated_data)
